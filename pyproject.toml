@@ -1,0 +1,51 @@
+[project]
+name = "videos-cleaner"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = ["httpx>=0.28.1", "typer>=0.17.3"]
+
+[project.scripts]
+cleaner = "videos_cleaner:main"
+
+[dependency-groups]
+dev = ["pyrefly>=0.31.0", "pytest>=8.4.1", "ruff>=0.12.11"]
+
+[build-system]
+requires = ["uv_build>=0.8.15,<0.9.0"]
+build-backend = "uv_build"
+
+[tool.ruff.lint]
+select = [
+  "A",
+  "ANN",
+  "ARG",
+  "ASYNC",
+  "B",
+  "COM",
+  "E",
+  "F",
+  "FBT",
+  "FURB",
+  "G",
+  "I",
+  "ICN",
+  "INP",
+  "LOG",
+  "N",
+  "PERF",
+  "PL",
+  "PT",
+  "Q",
+  "RET",
+  "RSE",
+  "RUF",
+  "S",
+  "SIM",
+  "T20",
+  "TC",
+  "TRY",
+  "UP",
+]
+ignore = ["RUF001"]
