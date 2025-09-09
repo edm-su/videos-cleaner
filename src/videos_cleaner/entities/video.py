@@ -2,8 +2,9 @@ from pydantic import BaseModel
 
 
 class Video(BaseModel):
-    slug: str
     deleted: bool
+    slug: str
+    yt_id: str
 
 
 class VideoList(BaseModel):
