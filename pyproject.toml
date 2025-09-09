@@ -4,13 +4,19 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = ["httpx>=0.28.1", "typer>=0.17.3"]
+dependencies = ["httpx>=0.28.1", "pydantic>=2.11.7", "typer>=0.17.3"]
 
 [project.scripts]
 cleaner = "videos_cleaner:main"
 
 [dependency-groups]
-dev = ["pyrefly>=0.31.0", "pytest>=8.4.1", "ruff>=0.12.11"]
+dev = [
+    "anyio>=4.10.0",
+    "pyrefly>=0.31.0",
+    "pytest>=8.4.1",
+    "respx>=0.22.0",
+    "ruff>=0.12.11",
+]
 
 [build-system]
 requires = ["uv_build>=0.8.15,<0.9.0"]
@@ -48,4 +54,7 @@ select = [
   "TRY",
   "UP",
 ]
-ignore = ["RUF001"]
+ignore = ["RUF001", "COM812"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101"]

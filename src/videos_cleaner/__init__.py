@@ -12,12 +12,14 @@ def main() -> None:
 
 def clean(
     main_api_url: Annotated[
-        str, typer.Option(envvar="MAIN_API_URL", help="URL API работы с видео")
+        str,
+        typer.Option(envvar="MAIN_API_URL", help="URL API работы с видео"),
     ],
     yt_data_api_url: Annotated[
         str,
         typer.Option(
-            envvar="YT_DATA_API_URL", help="URL API поставщика данных YouTube"
+            envvar="YT_DATA_API_URL",
+            help="URL API поставщика данных YouTube",
         ),
     ],
     limit: Annotated[
