@@ -11,6 +11,8 @@ from videos_cleaner.domain.interfaces.meta_repository import (
 
 @final
 class MetaRepostiory(IMetaRepository):
+    """Репозиторий информации о youtube видео с помощью OEmbed api youtube."""
+
     def __init__(self, client: AsyncClient) -> None:
         self._client = client
 

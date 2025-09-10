@@ -5,6 +5,8 @@ from videos_cleaner.entities.video import VideoList
 
 
 class VideoRepostiryError(Exception):
+    """Общая ошибка репозитория."""
+
     def __init__(self, message: str, code: int) -> None:
         self.message: str = message
         self.code: int = code
@@ -17,6 +19,8 @@ class VideoRepostiryError(Exception):
 
 @final
 class VideoNotFoundError(VideoRepostiryError):
+    """Видео не найдено."""
+
     def __init__(self) -> None:
         self.message = "Видео не найдено"
         self.code = 404
@@ -25,6 +29,8 @@ class VideoNotFoundError(VideoRepostiryError):
 
 @final
 class VideoIsAlreadyDeletedError(VideoRepostiryError):
+    """Видео уже удалено."""
+
     def __init__(self) -> None:
         self.message = "Видео было уже удалено"
         self.code = 409
@@ -33,6 +39,8 @@ class VideoIsAlreadyDeletedError(VideoRepostiryError):
 
 @final
 class VideoIsNotDeletedError(VideoRepostiryError):
+    """Видео не было удалено ранее."""
+
     def __init__(self) -> None:
         self.message = "Видео не может быть удалено"
         self.code = 409
@@ -40,11 +48,49 @@ class VideoIsNotDeletedError(VideoRepostiryError):
 
 
 class IVideoRepository(ABC):
-    @abstractmethod
-    async def get_all(self, offset: int = 0, *, limit: int = 50) -> VideoList: ...
+    """Интерфейс репозитория видео."""
 
     @abstractmethod
-    async def delete(self, slug: str, *, temporary: bool = True) -> None: ...
+    async def get_all(self, offset: int = 0, *, limit: int = 50) -> VideoList:
+        """Получить все элементы (с пагинацией).
+
+        Args:
+            offset: Отступ.
+            limit: Ограничение на количество.
+
+        Returns:
+            Возвращает VideoList со списком видео.
+
+        Raises:
+            VideoRepositoryError: Неизвестная ошибка.
+        """
+        ...
 
     @abstractmethod
-    async def restore(self, slug: str) -> None: ...
+    async def delete(self, slug: str, *, temporary: bool = True) -> None:
+        """Удалить видео.
+
+        Args:
+            slug: Идентификатор видео.
+            temporary: Удалить временно/навсегда (по умолчанию временно).
+
+        Raises:
+            VideosIsAlreadyDeletedError:
+            VideoNotFoundError:
+            VideoRepositoryError:
+        """
+        ...
+
+    @abstractmethod
+    async def restore(self, slug: str) -> None:
+        """Восстановить видео.
+
+        Args:
+            slug: Идентификатор видео.
+
+        Raises:
+            VideosIsNoteDeletedError:
+            VideoNotFoundError:
+            VideoRepositoryError:
+        """
+        ...

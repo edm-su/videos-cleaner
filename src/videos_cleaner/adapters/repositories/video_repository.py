@@ -16,6 +16,8 @@ from videos_cleaner.entities.video import Video, VideoList
 
 @final
 class VideoRepository(IVideoRepository):
+    """Репозиторий видео API edm.su."""
+
     def __init__(self, client: AsyncClient) -> None:
         self._client = client
         super().__init__()
