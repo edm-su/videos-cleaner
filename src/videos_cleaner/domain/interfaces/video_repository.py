@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import final, override
 
+from wireup import abstract
+
 from videos_cleaner.entities.video import VideoList
 
 
@@ -47,6 +49,7 @@ class VideoIsNotDeletedError(VideoRepostiryError):
         super().__init__(self.message, self.code)
 
 
+@abstract
 class IVideoRepository(ABC):
     """Интерфейс репозитория видео."""
 

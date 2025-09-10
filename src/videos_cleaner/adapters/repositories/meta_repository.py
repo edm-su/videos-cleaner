@@ -1,6 +1,7 @@
 from typing import final, override
 
 from httpx import AsyncClient
+from wireup import service
 
 from videos_cleaner.domain.interfaces.meta_repository import (
     ExistsStatus,
@@ -10,6 +11,7 @@ from videos_cleaner.domain.interfaces.meta_repository import (
 
 
 @final
+@service
 class MetaRepostiory(IMetaRepository):
     """Репозиторий информации о youtube видео с помощью OEmbed api youtube."""
 

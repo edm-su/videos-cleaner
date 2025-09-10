@@ -17,13 +17,13 @@ pytestmark = pytest.mark.anyio
 
 @pytest.fixture(scope="module")
 async def client() -> AsyncGenerator[AsyncClient]:
-    async with AsyncClient(base_url="http://test") as client:
+    async with AsyncClient() as client:
         yield client
 
 
 @pytest.fixture
 def repo(client: AsyncClient) -> VideoRepository:
-    return VideoRepository(client)
+    return VideoRepository(client, "http://test")
 
 
 class TestVideoRepository:

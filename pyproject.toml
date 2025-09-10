@@ -5,14 +5,16 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+  "asyncer>=0.0.8",
   "httpx>=0.28.1",
   "pydantic>=2.11.7",
   "pytest-mock>=3.15.0",
   "typer>=0.17.3",
+  "wireup>=2.0.1",
 ]
 
 [project.scripts]
-cleaner = "videos_cleaner:main"
+cleaner = "videos_cleaner.controller.cli:app"
 
 [dependency-groups]
 dev = [
@@ -68,3 +70,4 @@ convention = "google"
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101", "PLR2004", "FBT001", "D"]
+"src/videos_cleaner/controller/**" = ["T201"]
