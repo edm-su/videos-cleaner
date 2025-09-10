@@ -12,4 +12,4 @@ unit-tests:
     uv run pytest .
 
 coverage:
-    uv run pytest . --cov=src/videos_cleaner --cov-report=html
+    uv run pytest tests/ --cov=src/videos_cleaner --cov-report=html
