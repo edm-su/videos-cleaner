@@ -1,8 +1,9 @@
 from json import JSONDecodeError
-from typing import final, override
+from typing import Annotated, final, override
 
 from httpx import AsyncClient, Response
 from pydantic import TypeAdapter
+from wireup import Inject, service
 
 from videos_cleaner.domain.interfaces.video_repository import (
     IVideoRepository,
@@ -15,17 +16,23 @@ from videos_cleaner.entities.video import Video, VideoList
 
 
 @final
+@service
 class VideoRepository(IVideoRepository):
     """Репозиторий видео API edm.su."""
 
-    def __init__(self, client: AsyncClient) -> None:
+    def __init__(
+        self,
+        client: AsyncClient,
+        base_url: Annotated[str, Inject(param="video_url")] = "http://localhost",
+    ) -> None:
         self._client = client
+        self.base_url = base_url
         super().__init__()
 
     @override
     async def get_all(self, offset: int = 0, *, limit: int = 50) -> VideoList:
         response = await self._client.get(
-            "/videos",
+            f"{self.base_url}/videos",
             params={"include_deleted": True, "skip": offset, "limit": limit},
         )
         match response.status_code:
@@ -43,7 +50,7 @@ class VideoRepository(IVideoRepository):
 
     @override
     async def restore(self, slug: str) -> None:
-        response = await self._client.post(f"/videos/{slug}/restore")
+        response = await self._client.post(f"{self.base_url}/videos/{slug}/restore")
         match response.status_code:
             case 200:
                 return
@@ -65,7 +72,7 @@ class VideoRepository(IVideoRepository):
     @override
     async def delete(self, slug: str, *, temporary: bool = True) -> None:
         response = await self._client.delete(
-            f"/videos/{slug}",
+            f"{self.base_url}/videos/{slug}",
             params={"temporary": temporary},
         )
 

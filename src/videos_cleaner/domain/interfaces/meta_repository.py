@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 from enum import Enum, auto
 from typing import override
 
+from wireup import abstract
+
 
 class MetaRepositoryError(Exception):
     """Ошибка репозитория мета информации о Youtube видео."""
@@ -24,6 +26,7 @@ class ExistsStatus(Enum):
     REMOVED = auto()
 
 
+@abstract
 class IMetaRepository(ABC):
     """Репозиторий мета информации о Youtube видео."""
 

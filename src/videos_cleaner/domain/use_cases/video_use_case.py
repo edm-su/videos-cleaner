@@ -1,6 +1,8 @@
 import logging
 from typing import final
 
+from wireup import service
+
 from videos_cleaner.domain.interfaces.meta_repository import (
     ExistsStatus,
     IMetaRepository,
@@ -14,14 +16,8 @@ from videos_cleaner.entities.cleaner import VideoCleanerStats
 from videos_cleaner.entities.video import Video
 
 
-class BatchSizeMustBeGreaterThenZeroError(ValueError):
-    """Размер пакета слишком большой."""
-
-    def __init__(self, *args: object) -> None:
-        super().__init__("batch_size должен быть больше 0", *args)
-
-
 @final
+@service
 class VideoCleanerUseCase:
     """UseCase чистильщика видео."""
 
@@ -29,25 +25,17 @@ class VideoCleanerUseCase:
         self,
         video_repo: IVideoRepository,
         meta_repo: IMetaRepository,
-        *,
-        batch_size: int = 50,
     ) -> None:
         """Конструктор.
 
         Args:
             video_repo: Репозиторий видео.
             meta_repo: Репозиторий информации о youtube видео.
-            batch_size: Размер пакета (50).
-
-        Raises:
-            BatchSizeExpectMoreThenZeroError: размер пакета должен быть больше 0.
         """
-        if batch_size <= 0:
-            raise BatchSizeMustBeGreaterThenZeroError
         self._video_repo = video_repo
         self._meta_repo = meta_repo
         self.logger = logging.getLogger("VideoCleanerUseCase")
-        self.batch_size = batch_size
+        self.batch_size = 50
 
     async def _process_video(
         self,

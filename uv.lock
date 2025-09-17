@@ -25,6 +25,18 @@ wheels = [
 ]
 
 [[package]]
+name = "asyncer"
+version = "0.0.8"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "anyio" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ff/67/7ea59c3e69eaeee42e7fc91a5be67ca5849c8979acac2b920249760c6af2/asyncer-0.0.8.tar.gz", hash = "sha256:a589d980f57e20efb07ed91d0dbe67f1d2fd343e7142c66d3a099f05c620739c", size = 18217, upload-time = "2024-08-24T23:15:36.449Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8a/04/15b6ca6b7842eda2748bda0a0af73f2d054e9344320f8bba01f994294bcb/asyncer-0.0.8-py3-none-any.whl", hash = "sha256:5920d48fc99c8f8f0f1576e1882f5022885589c5fcbc46ce4224ec3e53776eeb", size = 9209, upload-time = "2024-08-24T23:15:35.317Z" },
+]
+
+[[package]]
 name = "certifi"
 version = "2025.8.3"
 source = { registry = "https://pypi.org/simple" }
@@ -421,10 +433,12 @@ name = "videos-cleaner"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "asyncer" },
     { name = "httpx" },
     { name = "pydantic" },
     { name = "pytest-mock" },
     { name = "typer" },
+    { name = "wireup" },
 ]
 
 [package.dev-dependencies]
@@ -439,10 +453,12 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "asyncer", specifier = ">=0.0.8" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "pydantic", specifier = ">=2.11.7" },
     { name = "pytest-mock", specifier = ">=3.15.0" },
     { name = "typer", specifier = ">=0.17.3" },
+    { name = "wireup", specifier = ">=2.0.1" },
 ]
 
 [package.metadata.requires-dev]
@@ -453,4 +469,16 @@ dev = [
     { name = "pytest-cov", specifier = ">=7.0.0" },
     { name = "respx", specifier = ">=0.22.0" },
     { name = "ruff", specifier = ">=0.12.11" },
+]
+
+[[package]]
+name = "wireup"
+version = "2.0.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/c4/ae/c2b8bc3b92f968a4da17c586ec5e5c77b62b6dd15212c5a947bab09b43e1/wireup-2.0.1.tar.gz", hash = "sha256:c4e0e8860e5aa6389f67ab1a4d1fd9cbaf137bdeff1bbf48f88715501078b2e6", size = 26606, upload-time = "2025-07-20T18:57:25.862Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a9/80/f0e9a28307ae140a67f054c9464e36fc5df341aa8d9d5a0837e20c675cce/wireup-2.0.1-py3-none-any.whl", hash = "sha256:436c892d796ccebdc2235be8be7f8c81565ad357819692cb68a00fb1db501652", size = 32483, upload-time = "2025-07-20T18:57:24.515Z" },
 ]
