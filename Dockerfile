@@ -7,4 +7,4 @@ ADD . /app
 WORKDIR /app
 RUN uv sync --locked --no-dev
 
-CMD ["uv", "run", "cleaner"]
+ENTRYPOINT [ "uv", "run", "--locked", "--no-dev", "cleaner" ]
