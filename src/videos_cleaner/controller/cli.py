@@ -26,7 +26,8 @@ structlog.configure(
 
 app = typer.Typer()
 container = create_async_container(
-    [repositories, video_use_case], parameters={"video_url": "http://localhost"}
+    [repositories, video_use_case],
+    parameters={"video_url": "http://localhost", "youtube_data_api_repo": None},
 )
 
 

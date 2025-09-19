@@ -5,6 +5,7 @@ from videos_cleaner.domain.interfaces.meta_repository import (
     ExistsStatus,
     IMetaRepository,
     MetaRepositoryError,
+    UnauthorizedError,
 )
 from videos_cleaner.domain.interfaces.video_repository import (
     IVideoRepository,
@@ -28,10 +29,19 @@ def meta_repository(mocker: MockFixture) -> IMetaRepository:
 
 
 @pytest.fixture
+def youtube_data_api_repository(mocker: MockFixture) -> IMetaRepository:
+    return mocker.AsyncMock(IMetaRepository)
+
+
+@pytest.fixture
 def use_case(
-    video_repository: IVideoRepository, meta_repository: IMetaRepository
+    video_repository: IVideoRepository,
+    meta_repository: IMetaRepository,
+    youtube_data_api_repository: IMetaRepository,
 ) -> VideoCleanerUseCase:
-    return VideoCleanerUseCase(video_repository, meta_repository)
+    return VideoCleanerUseCase(
+        video_repository, meta_repository, youtube_data_api_repository
+    )
 
 
 class TestCleanerUseCase:
@@ -309,4 +319,62 @@ class TestUseCaseErrors:
 
         _ = mock_get_all.assert_awaited_once()
         _ = mock_is_exists.assert_awaited_once()
+        assert result.unchanged == 1
+
+    async def test_embeddable_check(
+        self, use_case: VideoCleanerUseCase, mocker: MockFixture
+    ) -> None:
+        mock_get_all = mocker.patch.object(
+            use_case._video_repo,  # pyright: ignore[reportPrivateUsage]
+            "get_all",
+            return_value=VideoList(
+                total_count=1,
+                videos=[Video(deleted=True, slug="test", yt_id="test")],
+            ),
+        )
+        mock_is_exists = mocker.patch.object(
+            use_case._meta_repo,  # pyright: ignore[reportPrivateUsage]
+            "is_exists",
+            side_effect=UnauthorizedError,
+        )
+        mock_is_embeddable = mocker.patch.object(
+            use_case._youtube_data_api_repo,  # pyright: ignore[reportPrivateUsage]
+            "is_embeddable",
+            return_value=True,
+        )
+
+        result = await use_case.execute()
+
+        _ = mock_get_all.assert_awaited_once()
+        _ = mock_is_exists.assert_awaited_once()
+        _ = mock_is_embeddable.assert_awaited_once_with("test")
+        assert result.restored == 1
+
+    async def test_youtube_data_api_repo_is_none(
+        self, use_case: VideoCleanerUseCase, mocker: MockFixture
+    ) -> None:
+        mock_get_all = mocker.patch.object(
+            use_case._video_repo,  # pyright: ignore[reportPrivateUsage]
+            "get_all",
+            return_value=VideoList(
+                total_count=1,
+                videos=[Video(deleted=True, slug="test", yt_id="test")],
+            ),
+        )
+        mock_is_exists = mocker.patch.object(
+            use_case._meta_repo,  # pyright: ignore[reportPrivateUsage]
+            "is_exists",
+            side_effect=UnauthorizedError,
+        )
+        mock_is_embeddable = mocker.spy(
+            use_case._youtube_data_api_repo,  # pyright: ignore[reportPrivateUsage]
+            "is_embeddable",
+        )
+        use_case._youtube_data_api_repo = None  # pyright: ignore[reportPrivateUsage]
+
+        result = await use_case.execute()
+
+        _ = mock_get_all.assert_awaited_once()
+        _ = mock_is_exists.assert_awaited_once()
+        _ = mock_is_embeddable.assert_not_awaited()
         assert result.unchanged == 1

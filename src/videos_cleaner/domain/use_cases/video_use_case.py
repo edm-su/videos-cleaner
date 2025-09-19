@@ -1,12 +1,13 @@
-from typing import final
+from typing import Annotated, final
 
 import structlog
-from wireup import service
+from wireup import Inject, service
 
 from videos_cleaner.domain.interfaces.meta_repository import (
     ExistsStatus,
     IMetaRepository,
     MetaRepositoryError,
+    UnauthorizedError,
 )
 from videos_cleaner.domain.interfaces.video_repository import (
     IVideoRepository,
@@ -27,15 +28,20 @@ class VideoCleanerUseCase:
         self,
         video_repo: IVideoRepository,
         meta_repo: IMetaRepository,
+        youtube_data_api_repo: Annotated[
+            IMetaRepository | None, Inject(param="youtube_data_api_repo")
+        ],
     ) -> None:
         """Конструктор.
 
         Args:
             video_repo: Репозиторий видео.
             meta_repo: Репозиторий информации о youtube видео.
+            youtube_data_api_repo: Репозиторий Youtube Data API.
         """
         self._video_repo = video_repo
         self._meta_repo = meta_repo
+        self._youtube_data_api_repo = youtube_data_api_repo
         self.batch_size = 50
 
     async def _process_video(
@@ -83,6 +89,21 @@ class VideoCleanerUseCase:
                 try:
                     status = await self._meta_repo.is_exists(video.yt_id)
                     await self._process_video(video, status, stats)
+
+                except UnauthorizedError:
+                    logger.debug("Доступ не авторизован", yt_id=video.yt_id)
+
+                    if self._youtube_data_api_repo:
+                        status = (
+                            ExistsStatus.EXISTS
+                            if await self._youtube_data_api_repo.is_embeddable(
+                                video.yt_id
+                            )
+                            else ExistsStatus.HIDDEN
+                        )
+                        await self._process_video(video, status, stats)
+                    else:
+                        stats.unchanged += 1
                 except MetaRepositoryError:
                     logger.exception("Ошибка мета репозитория", yt_id=video.yt_id)
                     stats.unchanged += 1
