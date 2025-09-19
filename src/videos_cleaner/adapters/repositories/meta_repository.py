@@ -33,3 +33,12 @@ class MetaRepostiory(IMetaRepository):
                 return ExistsStatus.HIDDEN
             case code:
                 raise MetaRepositoryError(response.text, code)
+
+    @override
+    async def is_embeddable(self, yt_id: str) -> bool:
+        return await super().is_embeddable(yt_id)
+
+
+@final
+class YoutubeDataApiRepository(IMetaRepository):
+    """Репозиторий информации о youtube видео с помощью YouTube Data API."""

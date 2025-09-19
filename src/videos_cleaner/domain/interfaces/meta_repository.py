@@ -18,6 +18,13 @@ class MetaRepositoryError(Exception):
         return f"Код ошибки: {self.code}. Детали: {self.message}"
 
 
+class UnauthorizedError(MetaRepositoryError):
+    """Ошибка отсутствия авторизации."""
+
+    def __init__(self) -> None:
+        super().__init__("Нет доступа", 401)
+
+
 class ExistsStatus(Enum):
     """Статус существования."""
 
@@ -33,6 +40,17 @@ class IMetaRepository(ABC):
     @abstractmethod
     async def is_exists(self, yt_id: str) -> ExistsStatus:
         """Проверка существования видео в youtube.
+
+        Args:
+            yt_id: идентификатор youtube видео.
+
+        Raises:
+            MetaRepositoryError: общая ошибка репозитория.
+        """
+
+    @abstractmethod
+    async def is_embeddable(self, yt_id: str) -> bool:
+        """Проверка доступности встраивания видео на сайт.
 
         Args:
             yt_id: идентификатор youtube видео.
