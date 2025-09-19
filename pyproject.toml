@@ -10,6 +10,7 @@ dependencies = [
   "httpx>=0.28.1",
   "pydantic>=2.11.7",
   "pytest-mock>=3.15.0",
+  "structlog>=25.4.0",
   "typer>=0.17.3",
   "wireup>=2.0.1",
 ]
