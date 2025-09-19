@@ -19,6 +19,13 @@ from videos_cleaner.entities.video import Video
 logger = structlog.stdlib.get_logger(__name__)
 
 
+class RepositoryAlreadyInstalledError(ValueError):
+    """Ошибка уже установленного репозитория."""
+
+    def __init__(self) -> None:
+        super().__init__("Репозиторий уже установлен")
+
+
 @final
 @service
 class VideoCleanerUseCase:
@@ -43,6 +50,17 @@ class VideoCleanerUseCase:
         self._meta_repo = meta_repo
         self._youtube_data_api_repo = youtube_data_api_repo
         self.batch_size = 50
+
+    @property
+    def youtube_data_api_repo(self) -> IMetaRepository | None:
+        """Получить YouTube Data API репозиторий."""
+        return self._youtube_data_api_repo
+
+    @youtube_data_api_repo.setter
+    def youtube_data_api_repo(self, new_value: IMetaRepository | None) -> None:
+        if self._youtube_data_api_repo:
+            raise RepositoryAlreadyInstalledError
+        self._youtube_data_api_repo = new_value
 
     async def _process_video(
         self,

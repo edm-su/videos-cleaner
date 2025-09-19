@@ -338,7 +338,7 @@ class TestUseCaseErrors:
             side_effect=UnauthorizedError,
         )
         mock_is_embeddable = mocker.patch.object(
-            use_case._youtube_data_api_repo,  # pyright: ignore[reportPrivateUsage]
+            use_case._youtube_data_api_repo,
             "is_embeddable",
             return_value=True,
         )
@@ -367,10 +367,10 @@ class TestUseCaseErrors:
             side_effect=UnauthorizedError,
         )
         mock_is_embeddable = mocker.spy(
-            use_case._youtube_data_api_repo,  # pyright: ignore[reportPrivateUsage]
+            use_case._youtube_data_api_repo,
             "is_embeddable",
         )
-        use_case._youtube_data_api_repo = None  # pyright: ignore[reportPrivateUsage]
+        use_case._youtube_data_api_repo = None
 
         result = await use_case.execute()
 

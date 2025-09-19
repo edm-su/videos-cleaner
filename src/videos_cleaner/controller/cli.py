@@ -7,6 +7,9 @@ from asyncer import syncify
 from wireup import create_async_container
 
 from videos_cleaner.adapters import repositories
+from videos_cleaner.adapters.repositories.meta_repository import (
+    YoutubeDataApiRepository,
+)
 from videos_cleaner.adapters.repositories.video_repository import VideoRepository
 from videos_cleaner.domain.use_cases import video_use_case
 from videos_cleaner.domain.use_cases.video_use_case import VideoCleanerUseCase
@@ -45,6 +48,12 @@ async def main(
             help="Количество последних видео, которые нужно проверить",
         ),
     ] = 500,
+    youtube_data_api_key: Annotated[
+        str | None,
+        typer.Option(
+            envvar="YOUTUBE_DATA_API_KEY", help="Ключ доступа к YouTube Data API"
+        ),
+    ] = None,
 ) -> None:
     """Очистка видео. Если limit указан 0, то происходит очистка всех видео."""
     logger = structlog.stdlib.get_logger()
@@ -52,6 +61,10 @@ async def main(
     video_repository = await container.get(VideoRepository)
 
     video_repository.base_url = main_api_url
+
+    if youtube_data_api_key:
+        youtube_data_api_repository = YoutubeDataApiRepository(youtube_data_api_key)
+        cleaner_use_case.youtube_data_api_repo = youtube_data_api_repository
 
     result = await cleaner_use_case.execute(limit)
 
