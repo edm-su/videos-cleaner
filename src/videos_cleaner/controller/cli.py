@@ -1,6 +1,7 @@
 from functools import partial
 from typing import Annotated
 
+import structlog
 import typer
 from asyncer import syncify
 from wireup import create_async_container
@@ -9,6 +10,19 @@ from videos_cleaner.adapters import repositories
 from videos_cleaner.adapters.repositories.video_repository import VideoRepository
 from videos_cleaner.domain.use_cases import video_use_case
 from videos_cleaner.domain.use_cases.video_use_case import VideoCleanerUseCase
+
+structlog.configure(
+    processors=[
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.add_log_level,
+        structlog.dev.ConsoleRenderer(
+            exception_formatter=structlog.dev.plain_traceback
+        ),
+    ],
+    wrapper_class=structlog.make_filtering_bound_logger(20),
+    logger_factory=structlog.PrintLoggerFactory(),
+    cache_logger_on_first_use=False,
+)
 
 app = typer.Typer()
 container = create_async_container(
@@ -32,6 +46,7 @@ async def main(
     ] = 500,
 ) -> None:
     """Очистка видео. Если limit указан 0, то происходит очистка всех видео."""
+    logger = structlog.stdlib.get_logger()
     cleaner_use_case = await container.get(VideoCleanerUseCase)
     video_repository = await container.get(VideoRepository)
 
@@ -39,10 +54,13 @@ async def main(
 
     result = await cleaner_use_case.execute(limit)
 
-    print(f"""Обработано: {result.total} видео.
-Скрыто: {result.hidden}.
-Удалено навсегда: {result.deleted}.
-Восстановлено: {result.restored}""")
+    logger.info(
+        "Обработка видео завершена",
+        total=result.total,
+        hidden=result.hidden,
+        deleted=result.deleted,
+        restored=result.restored,
+    )
     await container.close()
 
 

@@ -1,6 +1,6 @@
-import logging
 from typing import final
 
+import structlog
 from wireup import service
 
 from videos_cleaner.domain.interfaces.meta_repository import (
@@ -14,6 +14,8 @@ from videos_cleaner.domain.interfaces.video_repository import (
 )
 from videos_cleaner.entities.cleaner import VideoCleanerStats
 from videos_cleaner.entities.video import Video
+
+logger = structlog.stdlib.get_logger(__name__)
 
 
 @final
@@ -34,7 +36,6 @@ class VideoCleanerUseCase:
         """
         self._video_repo = video_repo
         self._meta_repo = meta_repo
-        self.logger = logging.getLogger("VideoCleanerUseCase")
         self.batch_size = 50
 
     async def _process_video(
@@ -83,10 +84,10 @@ class VideoCleanerUseCase:
                     status = await self._meta_repo.is_exists(video.yt_id)
                     await self._process_video(video, status, stats)
                 except MetaRepositoryError:
-                    self.logger.exception("Ошибка мета репозитория")
+                    logger.exception("Ошибка мета репозитория", yt_id=video.yt_id)
                     stats.unchanged += 1
                 except VideoRepostiryError:
-                    self.logger.exception("Ошибка видео репозитория")
+                    logger.exception("Ошибка видео репозитория", slug=video.slug)
                     stats.unchanged += 1
 
                 if limit and stats.total >= limit:

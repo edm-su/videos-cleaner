@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, cast
-from unittest.mock import AsyncMock
 
+import structlog
 from pytest_mock import MockerFixture
 from typer.testing import CliRunner
 
@@ -16,9 +16,10 @@ runner = CliRunner()
 
 class TestCliController:
     def test_clean(self, mocker: MockerFixture) -> None:
+        # Given
         stats = VideoCleanerStats(0, 0, 1, 0)
-        mock_use_case = AsyncMock(spec=VideoCleanerUseCase)
-        mock_execute = AsyncMock(return_value=stats)
+        mock_use_case = mocker.AsyncMock(spec=VideoCleanerUseCase)
+        mock_execute = mocker.AsyncMock(return_value=stats)
         mock_use_case.execute = cast(
             "Callable[[int | None], VideoCleanerStats]", mock_execute
         )
@@ -28,13 +29,22 @@ class TestCliController:
 
         _ = mocker.patch.object(container, "get", side_effect=mock_get)
 
+        mock_logger = mocker.Mock()
+        mock_logger.info = mocker.Mock()
+        mock_get_logger = mocker.patch.object(
+            structlog.stdlib, "get_logger", return_value=mock_logger
+        )
+
+        # When
         result = runner.invoke(app, ["--main-api-url", "http://test"])
 
-        assert (
-            f"""Обработано: {stats.total} видео.
-Скрыто: {stats.hidden}.
-Удалено навсегда: {stats.deleted}.
-Восстановлено: {stats.restored}"""
-            in result.output
+        # Then
+        mock_get_logger.assert_called_once()
+        mock_logger.info.assert_called_once_with(
+            "Обработка видео завершена",
+            total=stats.total,
+            hidden=stats.hidden,
+            deleted=stats.deleted,
+            restored=stats.restored,
         )
         assert result.exit_code == 0
