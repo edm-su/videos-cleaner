@@ -42,3 +42,7 @@ class MetaRepostiory(IMetaRepository):
 @final
 class YoutubeDataApiRepository(IMetaRepository):
     """Репозиторий информации о youtube видео с помощью YouTube Data API."""
+
+    def __init__(self, key: str) -> None:
+        self._key = key
+        super().__init__()
