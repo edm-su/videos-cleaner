@@ -4,6 +4,7 @@ from typing import Annotated
 import structlog
 import typer
 from asyncer import syncify
+from httpx import AsyncClient
 from wireup import create_async_container
 
 from videos_cleaner.adapters import repositories
@@ -63,7 +64,10 @@ async def main(
     video_repository.base_url = main_api_url
 
     if youtube_data_api_key:
-        youtube_data_api_repository = YoutubeDataApiRepository(youtube_data_api_key)
+        http_client = await container.get(AsyncClient)
+        youtube_data_api_repository = YoutubeDataApiRepository(
+            youtube_data_api_key, http_client
+        )
         cleaner_use_case.youtube_data_api_repo = youtube_data_api_repository
 
     result = await cleaner_use_case.execute(limit)

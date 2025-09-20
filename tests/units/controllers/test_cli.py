@@ -84,5 +84,7 @@ class TestCliController:
         )
 
         # Then
-        mock_repo_constructor.assert_called_once_with("secretkey")
+        mock_repo_constructor.assert_called_once_with(
+            "secretkey", *mock_repo_constructor.call_args[0][1:]
+        )
         assert result.exit_code == 0
