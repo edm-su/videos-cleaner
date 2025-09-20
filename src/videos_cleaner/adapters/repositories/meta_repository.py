@@ -1,4 +1,4 @@
-from typing import final, override
+from typing import Literal, final, override
 
 from httpx import AsyncClient
 from wireup import service
@@ -7,6 +7,7 @@ from videos_cleaner.domain.interfaces.meta_repository import (
     ExistsStatus,
     IMetaRepository,
     MetaRepositoryError,
+    UnauthorizedError,
 )
 
 
@@ -43,6 +44,31 @@ class MetaRepostiory(IMetaRepository):
 class YoutubeDataApiRepository(IMetaRepository):
     """Репозиторий информации о youtube видео с помощью YouTube Data API."""
 
-    def __init__(self, key: str) -> None:
+    def __init__(self, key: str, client: AsyncClient) -> None:
         self._key = key
+        self._client = client
         super().__init__()
+
+    @override
+    async def is_exists(self, yt_id: str) -> ExistsStatus:
+        return await super().is_exists(yt_id)
+
+    @override
+    async def is_embeddable(self, yt_id: str) -> bool:
+        response = await self._client.get(
+            f"https://youtube.googleapis.com/youtube/v3/videos?part=status&id={yt_id}&fields=items(status/embeddable)&key={self._key}"
+        )
+
+        match response.status_code:
+            case 200:
+                data: dict[
+                    Literal["items"],
+                    list[dict[Literal["status"], dict[Literal["embeddable"], bool]]],
+                ] = response.json()
+                if item := data["items"]:
+                    return item[0]["status"]["embeddable"]
+                return False
+            case 403:
+                raise UnauthorizedError
+            case code:
+                raise MetaRepositoryError(response.text, code)

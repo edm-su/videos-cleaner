@@ -71,5 +71,5 @@ ignore = ["RUF001", "RUF002", "COM812", "D100", "D104", "D107"]
 convention = "google"
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["S101", "PLR2004", "FBT001", "D"]
+"tests/**" = ["S101", "PLR2004", "FBT001", "D", "TRY003"]
 "src/videos_cleaner/controller/**" = ["T201"]

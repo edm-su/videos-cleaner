@@ -69,7 +69,11 @@ jobs:
             uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
             uv-${{ runner.os }}
       - name: Run tests
-        run: uv run pytest --cov=src/videos_cleaner --junitxml=pytest.xml --cov-report=term-missing:skip-covered tests/ | tee pytest-coverage.txt
+        env:
+          YOUTUBE_DATA_API_KEY: ${{ secrets.YOUTUBE_DATA_API_KEY }}
+        run: |
+          set -o pipefail
+          uv run pytest --cov=src/videos_cleaner --junitxml=pytest.xml --cov-report=term-missing:skip-covered tests/ | tee pytest-coverage.txt
       - name: Pytest coverage comment
         uses: MishaKav/pytest-coverage-comment@main
         with:

@@ -112,14 +112,20 @@ class VideoCleanerUseCase:
                     logger.debug("Доступ не авторизован", yt_id=video.yt_id)
 
                     if self._youtube_data_api_repo:
-                        status = (
-                            ExistsStatus.EXISTS
-                            if await self._youtube_data_api_repo.is_embeddable(
-                                video.yt_id
+                        try:
+                            status = (
+                                ExistsStatus.EXISTS
+                                if await self._youtube_data_api_repo.is_embeddable(
+                                    video.yt_id
+                                )
+                                else ExistsStatus.HIDDEN
                             )
-                            else ExistsStatus.HIDDEN
-                        )
-                        await self._process_video(video, status, stats)
+                            await self._process_video(video, status, stats)
+                        except MetaRepositoryError:
+                            logger.exception(
+                                "Ошибка мета репозитория", yt_id=video.yt_id
+                            )
+                            stats.unchanged += 1
                     else:
                         stats.unchanged += 1
                 except MetaRepositoryError:
