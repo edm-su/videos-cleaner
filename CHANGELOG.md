@@ -7,6 +7,12 @@
 - extend the video cleaning use case to interact with the YouTube API Repository (#11) - (fbf8d34) - EgorHenek
 
 - - -
+## v1.2.1 - 2025-09-21
+#### Bug Fixes
+- unauthorized error raised for meta repository (#17) - (6ff674c) - EgorHenek
+
+- - -
+
 
 ## v1.1.0 - 2025-09-21
 #### Documentation
