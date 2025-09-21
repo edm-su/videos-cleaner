@@ -32,6 +32,8 @@ class MetaRepostiory(IMetaRepository):
                 return ExistsStatus.REMOVED
             case 403:
                 return ExistsStatus.HIDDEN
+            case 401:
+                raise UnauthorizedError
             case code:
                 raise MetaRepositoryError(response.text, code)
 
