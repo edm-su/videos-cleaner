@@ -1,3 +1,13 @@
+## v1.2.0 - 2025-09-21
+#### Documentation
+- add --youtube-data-api-key option to the README (#14) - (28d2cfa) - EgorHenek
+#### Features
+- add youtube data api repository (#15) - (1b84ff2) - EgorHenek
+- add youtube-data-api-key option to the CLI (#12) - (23655e3) - EgorHenek
+- extend the video cleaning use case to interact with the YouTube API Repository (#11) - (fbf8d34) - EgorHenek
+
+- - -
+
 ## v1.1.0 - 2025-09-21
 #### Documentation
 - add README - (44c69d0) - Egor Glukhikh
