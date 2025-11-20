@@ -13,7 +13,7 @@ jobs:
     env:
       UV_CACHE_DIR: /tmp/.uv-cache
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Set up uv
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
       - uses: extractions/setup-just@v3
@@ -35,7 +35,7 @@ jobs:
     env:
       UV_CACHE_DIR: /tmp/.uv-cache
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Set up uv
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
       - uses: extractions/setup-just@v3
@@ -57,7 +57,7 @@ jobs:
     env:
       UV_CACHE_DIR: /tmp/.uv-cache
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Set up uv
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
       - name: Restore uv cache
@@ -85,7 +85,7 @@ jobs:
     name: Test docker build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Build Docker image
         run: |
           docker build -t videos-cleaner .
